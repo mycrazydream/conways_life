@@ -28,6 +28,9 @@ from termcolor import colored
 
 class Life:
 	def __init__(self,scale):
+		"""
+		int scale Size of our square grid, width and height
+		"""
 		self.scale 	= scale
 		self.range	= range(scale)
 		self.board 	= [[0 for j in self.range] for i in self.range]
@@ -40,7 +43,9 @@ class Life:
 		pass
 
 	def seed_the_board(self):
-		"""docstring for seed_the_board"""
+		"""
+		Randomly assign values of 1 (alive) to cells on the board
+		"""
 		from random import randrange
 		i=-1
 		for row in self.board:
@@ -55,7 +60,9 @@ class Life:
 		pass
 	
 	def pass_a_generation(self):
-		"""docstring for pass_a_generation"""
+		"""
+		Self calling fn to run the evolution of each generation
+		"""
 		self.generation+=1
 		self.test_board()
 		time.sleep(.5)
@@ -65,6 +72,9 @@ class Life:
 	def test_cell(self,neighbors,cell):
 		"""
 		Given a cell on the board, test its next generation according to the four axioms of Conway's Game of Life
+		
+		list 	neighbors 	Is a list of values 0 or 1 of the eight surrounding neighbor cells
+		int 	cell 		Value of the cell we are testing, changes the axiom rule logic
 		"""
 		if cell==0:
 			if self.axiom_four(neighbors):
@@ -86,7 +96,13 @@ class Life:
 		return next_generation
 
 	def test_neighbors(self,i,j):
-		"""docstring for test_neighbors"""
+		"""
+		Grab the neighbors of the cell defined by i,j and pass them on so that the cell can be tested according 
+		to their values
+		
+		int i Key of first list (row #)
+		int j Key of second list (col #)
+		"""
 		cell=0
 		if len(self.board) >= i and len(self.board[i]) >= j:
 			cell 	= self.board[i][j] 
@@ -143,12 +159,19 @@ class Life:
 		pass
 	
 	def set_cell(self,i,j,v):
-		"""docstring for set_cell"""
+		"""
+		int i Key of first list (row #)
+		int j Key of second list (col #)
+		int v Value to set the cell on the board
+		"""
 		self.board[i][j] = v
 		pass
 		
 	def get_cell(self,i,j):
-		"""docstring for get_cell"""
+		"""
+		int i Key of first list (row #)
+		int j Key of second list (col #)
+		"""
 		if len(self.board) >= i and len(self.board[i]) >= j:
  			cell = self.board[i][j] 
 		else:
@@ -156,7 +179,11 @@ class Life:
 		return cell
 		
 	def axiom_one(self,neighbors):
-		"""Any live cell with fewer than two live neighbours dies, as if caused by under-population."""
+		"""
+		Any live cell with fewer than two live neighbours dies, as if caused by under-population.
+		
+		list neighbors Is a list of values 0 or 1 of the eight surrounding neighbor cells
+		"""
 		live_neighbors=0
 		for i in neighbors:
 			if i==1:
@@ -169,7 +196,11 @@ class Life:
 		return result
 
 	def axiom_two(self,neighbors):
-		"""Any live cell with two or three live neighbours lives on to the next generation."""
+		"""
+		Any live cell with two or three live neighbours lives on to the next generation.
+		
+		list neighbors Is a list of values 0 or 1 of the eight surrounding neighbor cells
+		"""
 		live_neighbors=0
 		for i in neighbors:
 			if i==1:
@@ -183,7 +214,11 @@ class Life:
 
 	def axiom_three(self,neighbors):
 		result = False
-		"""Any live cell with more than three live neighbours dies, as if by overcrowding."""
+		"""
+		Any live cell with more than three live neighbours dies, as if by overcrowding.
+		
+		list neighbors Is a list of values 0 or 1 of the eight surrounding neighbor cells
+		"""
 		live_neighbors=0
 		for i in neighbors:
 			if i==1:
@@ -197,7 +232,11 @@ class Life:
 
 	def axiom_four(self,neighbors):
 		result = True
-		"""Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction."""
+		"""
+		Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+		
+		list neighbors Is a list of values 0 or 1 of the eight surrounding neighbor cells
+		"""
 		live_neighbors=0
 		for i in neighbors:
 			if i==1:
@@ -218,7 +257,10 @@ class Life:
 		pass
 
 	def show_board_in_terminal(self):
-		"""docstring for show_board_in_terminal"""
+		"""
+		Output the board in the terminal/shell using color and very different characters to make 
+		visually obvious the change from generation to generation
+		"""
 		i=-1
 		for col in self.board:
 			i+=1
