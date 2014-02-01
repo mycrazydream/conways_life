@@ -37,7 +37,7 @@ class Life:
 		try:
 			self.pass_a_generation()
 		except KeyboardInterrupt:
-			print ' The game of life is over after '+str(self.generation)+' generations!'
+			print ' The Game of Life is over after '+str(self.generation)+' generations!'
 		pass
 
 	def seed_the_board(self):
@@ -50,7 +50,7 @@ class Life:
 			for col in self.board[i]:
 				j+=1
 				seed = 0
-				if randrange(1,10)>7: 
+				if randrange(1,10)>7.5: 
 					seed = 1
 				self.board[i][j] = seed
 		pass
@@ -59,7 +59,7 @@ class Life:
 		"""docstring for pass_a_generation"""
 		self.generation+=1
 		self.test_board()
-		time.sleep(1)
+		time.sleep(.5)
 		self.pass_a_generation()		
 		pass
 		
