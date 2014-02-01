@@ -26,8 +26,6 @@ import os
 import time
 from termcolor import colored
 
-import signal
-
 class Life:
 	def __init__(self,scale):
 		self.scale 	= scale
