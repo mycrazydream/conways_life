@@ -1,4 +1,4 @@
-#!/opt/local/bin python
+#!/usr/bin/env python
 # encoding: utf-8
 """
 conways_life.py
