@@ -7,6 +7,7 @@ Created by Brent Ransom on 2014-01-28.
 Copyright (c) 2014 mycrazydream. All rights reserved.
 
 Conway's Game of Life
+http://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
 
 Axiom 1. Any live cell with fewer than two live neighbours dies, as if caused by under-population.
 Axiom 2. Any live cell with two or three live neighbours lives on to the next generation.
@@ -50,7 +51,7 @@ class Life:
 			for col in self.board[i]:
 				j+=1
 				seed = 0
-				if randrange(1,10)>7.5: 
+				if randrange(1,10)>8: 
 					seed = 1
 				self.board[i][j] = seed
 		pass
@@ -236,5 +237,5 @@ class Life:
 		pass
 
 
-scale 	= 20 #arbitrary value, ideally we will ask the user how big the gameboard should be
+scale 	= 52 #arbitrary value, ideally we will ask the user how big the gameboard should be
 ecology	= Life(scale)
