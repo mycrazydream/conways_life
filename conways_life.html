@@ -29,32 +29,37 @@ $(function() {
 	function Life(args){
 		var args = args || {};
 		var $ = args.$;
-		this.drawBoxes = function(n, div) {
-	        var cw = (n / 10) * 10,
-				ch = (n / 10) * 10,
-				gray 		= "stroke:#FFFFFF; fill: #CCC",
+		var that = this;
+		var C = {};
+		C.YSCALE = 250;
+		C.XSCALE = 500;
+		
+		this.drawBoxes = function(yscale, xscale, div) {
+	        var gray 		= "stroke:#FFFFFF; fill: #CCC",
 				black 		= "stroke:#FFFFFF; fill: #000000",
 			    blue 		= "stroke:#FFFFFF; fill: #0000FF",
 			    green 		= "stroke:#FFFFFF; fill: #00CC00",
-			    red 		= "stroke:#FFFFFF; fill: #FF0000";
+			    red 		= "stroke:#FFFFFF; fill: #FF0000",
+				n			= xscale*yscale/100;
+
 			/*partial boxes not applicable (yet) to CGOL
 	        if ((n % 10) != 0) {
 	          //ch += 10;
 	        }*/
 	        var rects = d3.select("#" + div).
 	         append("svg:svg").
-	         attr("width", cw).
-	         attr("height", ch);
+	         attr("width", xscale).
+	         attr("height", yscale);
 
 	        var length = 10,
 	        	whitespace = 2,
-				color=gray;
+				color=gray,
+				width=10,
+				height=10;
 			
 			var rIncrement = 0;
-	        for (var y = 0; y < ch; y+=length) {
-				var height = length;
-	            for (var x = 0; x < cw/2; x+=length) {
-	                var width = length;
+	        for (var y = 0; y < yscale; y+=length) {
+	            for (var x = 0; x < xscale; x+=length) {
 					//if we want to color the rows I was using this
 					//caseTest = ((y+'').substr(0,(y+'').length-1))*1,
 						
@@ -65,27 +70,46 @@ $(function() {
 	                  attr("height", height).
 	                  attr("width", width).
 	                  attr("style", color).
-					  attr("class", "rect r"+rIncrement);
+					  attr("class", "rect r"+rIncrement+" x"+(x/10)+" y"+(y/10));
 					
-					$('#life .rect').click(function(e){ $(this).attr("style",green)});
+					
 					
 	                n -= 1;
-	                if (n <= 0) {
-	                   return;
+	                if (n == 0) {
+						$('#life .rect').click(function(e){ $(this).attr("style",green).val(1); });
+						return;
 	                }
 	            }
 	        }
 	    }
+	
+		this.testBoard = function(){
+			/*scale = self.scale
+			for i in range(scale):
+				for j in range(scale):
+					self.test_neighbors(i,j)
+			self.show_board_in_terminal()*/
+		}
+	
+		this.passAGeneration = function(){
+			/*
+			Recursive fn to run the evolution of each generation
+			*/
+			that.generation+=1;
+			that.testBoard();
+			window.setTimeout(that.passAGeneration,500);
+		}
 
 		// private constructor 
 		var __construct = function(that) {
 			console.log('life has been instantiated');
 			that.generation 	= 0;
-			that.drawBoxes(500,'life');
+			that.drawBoxes(C.YSCALE, C.XSCALE, 'life');
 		}(this);
 		
 		this.beginLife = function(){
 			console.log("Life has started");
+			//that.passAGeneration();
 		}
 		
 		function singleBox(color) {
@@ -99,7 +123,8 @@ $(function() {
 	}
 	//end class Life()
 	window.life = new Life({
-		$:jQuery
+		$:jQuery,
+		that: this
 	});
 });
 	
