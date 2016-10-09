@@ -27,20 +27,23 @@
 $(function() {
 
 	function Life(args){
-		var args = args || {};
-		var $ = args.$;
-		var that = this;
-		var C = {};
-		C.YSCALE = 250;
-		C.XSCALE = 500;
-		
-		this.drawBoxes = function(yscale, xscale, div) {
+		var args 	= args || {},
+			$ 		= args.$,
+			that 	= this,
+			C 		= {};
+			
+		this.drawBoxes = function(xscale, yscale, div) {
 	        var gray 		= "stroke:#FFFFFF; fill: #CCC",
 				black 		= "stroke:#FFFFFF; fill: #000000",
 			    blue 		= "stroke:#FFFFFF; fill: #0000FF",
 			    green 		= "stroke:#FFFFFF; fill: #00CC00",
 			    red 		= "stroke:#FFFFFF; fill: #FF0000",
-				n			= xscale*yscale/100;
+				n			= xscale*yscale,
+				length 		= 10,
+		        whitespace 	= 2,
+				color		=gray,
+				width		=10,
+				height		=10;
 
 			/*partial boxes not applicable (yet) to CGOL
 	        if ((n % 10) != 0) {
@@ -48,34 +51,28 @@ $(function() {
 	        }*/
 	        var rects = d3.select("#" + div).
 	         append("svg:svg").
-	         attr("width", xscale).
-	         attr("height", yscale);
-
-	        var length = 10,
-	        	whitespace = 2,
-				color=gray,
-				width=10,
-				height=10;
+	         attr("width", xscale*length+xscale*2).
+	         attr("height", yscale*length+yscale*2);
 			
 			var rIncrement = 0;
-	        for (var y = 0; y < yscale; y+=length) {
-	            for (var x = 0; x < xscale; x+=length) {
+	        for (var y = 0; y < yscale; y++) {
+	            for (var x = 0; x < xscale; x++) {
 					//if we want to color the rows I was using this
 					//caseTest = ((y+'').substr(0,(y+'').length-1))*1,
 						
 					rIncrement++;
 	                rects.append("svg:rect").
-	                  attr("x", x).
-	                  attr("y", y).
+	                  attr("x", x*length).
+	                  attr("y", y*length).
 	                  attr("height", height).
 	                  attr("width", width).
 	                  attr("style", color).
-					  attr("class", "rect r"+rIncrement+" x"+(x/10)+" y"+(y/10));
+					  attr("class", "rect r"+rIncrement+" x"+x+" y"+y);
 					
 					
 					
-	                n -= 1;
-	                if (n == 0) {
+	                n--;
+	                if (n === 0) {
 						$('#life .rect').click(function(e){ $(this).attr("style",green).val(1); });
 						return;
 	                }
@@ -83,12 +80,112 @@ $(function() {
 	        }
 	    }
 	
+		this.range = function(low, high) {  
+		    return {
+		        __iterator__: function() {
+		            return {  
+		                next: function() {
+		                    if (low > high)
+		                        throw StopIteration;  
+		                    return low++;
+		                }
+		            }
+		        }
+		    }
+		}
+		
+		/* Getter/setter
+		int x Key of first list (row #)
+		int y Key of second list (col #)
+		int v Value to set the cell on the board
+		*/
+		this.cell = function(x,y,v){
+			if(!!v){
+				C.BOARD[x][y] = v;
+			} else {
+				return (!!C.BOARD[x] && C.BOARD[x][y]) 
+					? C.BOARD[x][y]
+					: undefined;
+			}
+		}
+		
+		/*
+		Given a cell on the board, test its next generation according to the four axioms of Conway's Game of Life
+
+		list 	neighbors 	Is a list of values 0 or 1 of the eight surrounding neighbor cells
+		int 	cell 		Value of the cell we are testing, changes the axiom rule logic
+		*/
+		this.testCell = function(neighbors,cell){
+			var nextGeneration;
+			
+			if (cell==0){
+				if (that.axiomFour(neighbors)){
+					nextGeneration = true;
+				} else {
+					nextGeneration = false;
+				}
+			} else if(cell==1){
+				if (that.axiomOne(neighbors)){
+					nextGeneration = false;
+				} else if(that.axiomTwo(neighbors)){
+					nextGeneration = true;
+				} else if(that.axiomThree(neighbors)){
+					nextGeneration = false;
+				} else {
+					nextGeneration = -1;
+				}
+			} else {
+				nextGeneration = -1;
+			}
+
+			return nextGeneration;
+		}
+		
+		/*
+		Grab the neighbors of the cell defined by i,j and pass them on so that the cell can be tested according 
+		to their values
+		
+		int x Key of first list (row #)
+		int y Key of second list (col #)
+		int r Individual cell marker used in dom class
+		*/
+		this.testNeighbors = function(x,y,r){
+			var cell = 0;
+			if(C.XSCALE>=x && C.YSCALE>=y){
+				cell = C.BOARD[x][y];
+			}
+			
+			var neighbors = [0,0,0,0,0,0,0,0];
+			for (var i in neighbors){
+				try{
+					neigbors[i] = that.getNeighborValue(C.BOARD[x-1][y-1]);
+				}catch(e){
+					neigbors[i]	= false;
+				}
+			}
+			
+			var result = that.testCell(neighbors,cell);
+			if(result != -1){
+				if(result === true) cell = 1;
+				else cell = 0;
+			}
+
+			that.cell(x,y,cell)
+		}
+	
 		this.testBoard = function(){
-			/*scale = self.scale
-			for i in range(scale):
-				for j in range(scale):
-					self.test_neighbors(i,j)
-			self.show_board_in_terminal()*/
+			var xRange 			= C.XSCALE,
+				yRange 			= C.YSCALE,
+				cellIncrement 	= 0;
+				
+			for (var x=0; x<xRange; x++){
+				for (var y=0; y<yRange; y++){
+					that.testNeighbors(x,y,cellIncrement);
+					cellIncrement++;
+				}
+			} 
+					
+			//that.updateBoardDisplay();
 		}
 	
 		this.passAGeneration = function(){
@@ -100,18 +197,31 @@ $(function() {
 			window.setTimeout(that.passAGeneration,500);
 		}
 
-		// private constructor 
-		var __construct = function(that) {
-			console.log('life has been instantiated');
-			that.generation 	= 0;
-			that.drawBoxes(C.YSCALE, C.XSCALE, 'life');
-		}(this);
-		
 		this.beginLife = function(){
 			console.log("Life has started");
 			//that.passAGeneration();
 		}
 		
+		// private constructor 
+		var __construct__ = function(that) {
+			console.log('life has been instantiated');
+			that.generation 	= 0;
+			
+			/* CONSTANTS */
+			C.XSCALE 	= 50;
+			C.YSCALE	= 25;
+			C.BOARD		= [];
+
+			for (var i in that.range(0, C.XSCALE-1)){
+				if(!C.BOARD[i]) C.BOARD[i] = [];
+				for (var j in that.range(0, C.YSCALE-1)){
+					C.BOARD[i][j] = 0;
+				}
+			}
+			
+			that.drawBoxes(C.XSCALE, C.YSCALE, 'life');
+		}(this);
+		/*
 		function singleBox(color) {
 	        s = '<svg width="11" height="11">';
 	        s += '<rect x="0" y="0" height="10" width="10" style="';
@@ -119,12 +229,11 @@ $(function() {
 	        s += '</svg>';
 	        return s;
 	    }
-
+		*/
 	}
 	//end class Life()
 	window.life = new Life({
-		$:jQuery,
-		that: this
+		$: 		jQuery
 	});
 });
 	
