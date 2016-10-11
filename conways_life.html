@@ -45,12 +45,15 @@ $(function() {
 			    blue 		= "stroke:#FFFFFF; fill: #0000FF",
 			    green 		= "stroke:#FFFFFF; fill: #00CC00",
 			    red 		= "stroke:#FFFFFF; fill: #FF0000",
+				// total number of cells
 				n			= xscale*yscale,
+				// size of cell in pixels
 				length 		= 10,
+				// lines between the cells, for that grid look
 		        whitespace 	= 2,
 				color		= gray,
-				width		=10,
-				height		=10;
+				width		= 10,
+				height		= 10;
 				
 			C.ALIVECOLOR 	= green;
 			C.DEADCOLOR		= gray;
@@ -470,8 +473,8 @@ $(function() {
 			<br style="clear:both;">
 		</p>
 		<p>
-		<a href="http://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" target="_blank" title="Conway&amp;s Game of Life">Conway's Game of Life</a>
-		<p>4 Axioms to Conway's Game of Life</p>
+		<a href="http://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" target="_blank" title="Conway's Game of Life" style="display:block;">Conway's Game of Life</a>
+		<span>4 Axioms to Conway's Game of Life</span>
 		</p>
 		<ol>
 			<li>Any live cell with fewer than two live neighbors dies, as if caused by under-population.</li>
