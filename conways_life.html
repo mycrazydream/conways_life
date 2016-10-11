@@ -12,8 +12,8 @@
 	/*
 	conways_game_of_life.js
 
-	Created by Brent Ransom on 2014-01-28.
-	Copyright (c) 2014 mycrazydream. All rights reserved.
+	Created by Brent Ransom on 2016-10-10.
+	Copyright &copy; 2016 mycrazydream. All rights reserved.
 
 	Conway's Game of Life
 	http://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
@@ -369,6 +369,7 @@ $(function() {
 
 		this.beginLife = function(){
 			console.log("Life has started");
+			$("#stopGag").val("start");
 			C.gameTimer = window.setInterval(that.passAGeneration,500);
 		}
 		
@@ -427,11 +428,64 @@ $(function() {
 	</script>
 	<style>
 		#life { width: 260px; height:260px; }
+		#ct { border:1px solid #333;border-radius:5px;margin:6px auto;padding:6px;background-color:white;text-align:center;width:500px; }
+		p, author { margin:4px; padding: 8px;}
+		body { font-family:Verdana, Monaco, sans-serif;width:100%;height:100%;margin:0;padding:0;font-size:12px; }
+		div.thumbinner {
+		    background-color: #f9f9f9;
+		    border: 1px solid #ccc;
+		    font-size: 94%;
+		    overflow: hidden;
+		    padding: 3px;
+		    text-align: center;
+		}
+		.thumbinner {
+		    min-width: 100px;
+		}
 	</style>
 </head>
 <body>
-	<div id="life"></div>
-	<button type="button" id="beginLife" onclick="life.beginLife();" name="startBtn">Start the Game of Life</button> - <button type="button" id="endLife" onclick="life.endLife();" name="endBtn">End the Game of Life</button>
-	<input type="hidden" id="stopGag" value="start" />
+	<div style="width:16%;float:right;margin:10px;" class="thumbinner">
+		<a class="image" href="http://www.wikipedia.org/wiki/File:Gospers_glider_gun.gif" target="_blank">
+			<img width="250" height="180" data-file-height="180" data-file-width="250" class="thumbimage" src="http://upload.wikimedia.org/wikipedia/commons/e/e5/Gospers_glider_gun.gif" alt=""></a>
+			<div class="thumbcaption">A single <a title="Bill Gosper" href="http://www.wikipedia.org/wiki/Bill_Gosper" target="_blank">Gosper</a>'s 
+				<a title="Gun (cellular automaton)" href="http://www.wikipedia.org/wiki/Gun_(cellular_automaton)" target="_blank">Glider Gun</a> creating "
+				<a title="Glider (Conway's Life)" href="http://www.wikipedia.org/wiki/Glider_(Conway%27s_Life)" target="_blank">gliders</a>"
+			</div>
+	</div>
+	<div style="float:left;width:80%;">
+	<header>
+		<author>
+		Created by Brent Ransom on 2016-10-10.
+		<p>Copyright &copy; 2016 mycrazydream. All rights reserved.</p>
+		</author>
+		<p>
+			
+			Please refer to the link here to see what this is all about. There is a lot to it, and it has interesting implications
+			to evolution, biological life, and mathematics. But... simply click the squares you want to seed the board with and hit Start.
+			Some patterns do more interesting things than others. The wikipedia page will tell you about them if you don't want to hunt.
+			If you can create a gun or regenerative pattern you are on your way!
+			
+			<br style="clear:both;">
+		</p>
+		<p>
+		<a href="http://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" target="_blank" title="Conway&amp;s Game of Life">Conway's Game of Life</a>
+		<p>4 Axioms to Conway's Game of Life</p>
+		</p>
+		<ol>
+			<li>Any live cell with fewer than two live neighbors dies, as if caused by under-population.</li>
+			<li>Any live cell with two or three live neighbors lives on to the next generation.</li>
+			<li>Any live cell with more than three live neighbors dies, as if by overcrowding.</li>
+			<li>Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.</li>
+		</ol>
+	</header>
+	<div id="ct">
+		<div id="life"></div>
+		<button type="button" id="beginLife" onclick="life.beginLife();" name="startBtn">Start the Game of Life</button> - <button type="button" id="endLife" onclick="life.endLife();" name="endBtn">End the Game of Life</button>
+		<input type="hidden" id="stopGag" value="start" />
+	</div>
+	</div>
+	
+	
 </body>
 </html>
