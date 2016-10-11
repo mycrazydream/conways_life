@@ -31,7 +31,14 @@ $(function() {
 			$ 		= args.$,
 			that 	= this,
 			C 		= {};
-			
+		
+		/* Using D3 to handle the graphics on the client-side. Works particularly well for a 2D board
+		since it is used for charts and the like. SVG
+
+		int 	xscale 	Width of our box
+		int 	yscale 	Height of our box
+		string	div 	ID of the div container
+		*/
 		this.drawBoxes = function(xscale, yscale, div) {
 	        var gray 		= "stroke:#FFFFFF; fill: #CCC",
 				black 		= "stroke:#FFFFFF; fill: #000000",
@@ -85,7 +92,13 @@ $(function() {
 	            }
 	        }
 	    }
-	
+		
+		/* Nice conversion of python range fn
+		
+		int low		Bottom value of range
+		int high 	Top value of range
+
+		*/
 		this.range = function(low, high) {  
 		    return {
 		        __iterator__: function() {
@@ -100,6 +113,11 @@ $(function() {
 		    }
 		}
 		
+		/*
+		int 	x	x coordinate on grid
+		int 	y 	y coordinate on grid
+		bool	return
+		*/
 		this.cellExists = function(x,y){
 			var cellExists = false
 			if(typeof(C.BOARD[x])!=="undefined" && typeof(C.BOARD[x][y])!=="undefined"){cellExists = true;}
@@ -208,6 +226,18 @@ $(function() {
 			return nextGenCell;
 		}
 		
+		/*
+		Get the values of all the cells surrounding the cell in question. 
+		The crux of the game, as it were.
+		int x 			x coordinate
+		int y			y coordinate
+		int neighbor	0-7 the 8 neighbors arround the cell
+		
+		Our eight neighbors, with the CELL in the center
+		|0|1|2|
+		|7|C|3|
+		|6|5|4|
+		*/
 		this.getNeighborValue = function(x,y,neighbor){
 			var nValue 	= 0,
 				nX		= 0,
@@ -262,7 +292,7 @@ $(function() {
 		
 		int x Key of first list (row #)
 		int y Key of second list (col #)
-		int r Individual cell marker used in dom class
+		int r Individual cell marker used in dom class (never ended up using this...)
 		*/
 		this.testNeighbors = function(x,y,r){
 			var cell = 0;
@@ -288,6 +318,9 @@ $(function() {
 			that.cell(x,y,nextGenCell,true);
 		}
 		
+		/*
+		Translate our 2D array to graphics for the kids at home
+		*/
 		this.updateBoardDisplay = function(){
 			for (var x in that.range(0, C.XSCALE-1)){
 				for (var y in that.range(0, C.YSCALE-1)){
@@ -300,7 +333,10 @@ $(function() {
 				}
 			}
 		}
-	
+		
+		/*
+		Run the board through all its tests/axioms for the generation
+		*/
 		this.testBoard = function(){
 			var xRange 			= C.XSCALE,
 				yRange 			= C.YSCALE,
@@ -342,6 +378,10 @@ $(function() {
 			console.log("Life has ended");
 		}
 		
+		/*
+		We need a temp board or else the logic overlaps and
+		screws up the whole game
+		*/
 		this.generateBoards = function(){
 			for (var i in that.range(0, C.XSCALE-1)){
 				if(!C.BOARD[i]) C.BOARD[i] = [];
@@ -353,6 +393,7 @@ $(function() {
 			}
 		}
 		
+		//reset
 		this.clearTempBoard = function(){
 			for (var i in that.range(0, C.XSCALE-1)){
 				for (var j in that.range(0, C.YSCALE-1)){
