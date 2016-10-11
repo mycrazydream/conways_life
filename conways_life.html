@@ -113,11 +113,19 @@ $(function() {
 		int y Key of second list (col #)
 		int v Value to set the cell on the board
 		*/
-		this.cell = function(x,y,v){
+		this.cell = function(x,y,v,temp){
 			if(typeof(v)==="number"){
-				C.BOARD[x][y] = v;
+				if(temp===true){
+					C.TEMPBOARD[x][y] = v;
+				} else {
+					C.BOARD[x][y] = v;
+				}
 			} else {
-				return C.BOARD[x][y];
+				if(temp===true){
+					return C.TEMPBOARD[x][y];
+				} else {
+					return C.BOARD[x][y];
+				}
 			}
 		}
 		
@@ -277,7 +285,7 @@ $(function() {
 			var nextGenCell = that.conwayAxioms(neighbors,cell);
 			
 			//set new value
-			that.cell(x,y,nextGenCell);
+			that.cell(x,y,nextGenCell,true);
 		}
 		
 		this.updateBoardDisplay = function(){
@@ -313,19 +321,44 @@ $(function() {
 			if($("#stopGag").val()!=="stop"){
 				that.generation++;
 				that.testBoard();
+				for (var i in that.range(0, C.XSCALE-1)){
+					for (var j in that.range(0, C.YSCALE-1)){
+						C.BOARD[i][j] = C.TEMPBOARD[i][j];
+					}
+				}
+				that.clearTempBoard();
 				that.updateBoardDisplay();
 			}
 		}
 
 		this.beginLife = function(){
 			console.log("Life has started");
-			C.gameTimer = window.setInterval(that.passAGeneration,750);
+			C.gameTimer = window.setInterval(that.passAGeneration,500);
 		}
 		
 		this.endLife = function(){
 			window.clearInterval(C.gameTimer);
 			$("#stopGag").val("stop");
 			console.log("Life has ended");
+		}
+		
+		this.generateBoards = function(){
+			for (var i in that.range(0, C.XSCALE-1)){
+				if(!C.BOARD[i]) C.BOARD[i] = [];
+				if(!C.TEMPBOARD[i]) C.TEMPBOARD[i] = [];
+				for (var j in that.range(0, C.YSCALE-1)){
+					C.TEMPBOARD[i][j] = 0;
+					C.BOARD[i][j] = 0;
+				}
+			}
+		}
+		
+		this.clearTempBoard = function(){
+			for (var i in that.range(0, C.XSCALE-1)){
+				for (var j in that.range(0, C.YSCALE-1)){
+					C.TEMPBOARD[i][j] = 0;
+				}
+			}
 		}
 		
 		// private constructor 
@@ -337,15 +370,10 @@ $(function() {
 			C.XSCALE 	= 50;
 			C.YSCALE	= 25;
 			C.BOARD		= [];
+			C.TEMPBOARD = [];
 			C.gameTimer	= {};
 
-			for (var i in that.range(0, C.XSCALE-1)){
-				if(!C.BOARD[i]) C.BOARD[i] = [];
-				for (var j in that.range(0, C.YSCALE-1)){
-					C.BOARD[i][j] = 0;
-				}
-			}
-			
+			that.generateBoards();
 			that.drawBoxes(C.XSCALE, C.YSCALE, 'life');
 		}(this);
 		/*
