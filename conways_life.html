@@ -86,9 +86,18 @@ $(function() {
 					
 	                n--;
 	                if (n === 0) {
-						$('#life .rect').click(function(e){ 
-							$(this).attr("style", C.ALIVECOLOR).val(1);
-							that.cell($(this).attr("x")*1/10, $(this).attr("y")*1/10, 1);
+						// Update our 2D array value holder and the DOM
+						$('#life .rect').click(function(e){
+							var $el = $(this),
+								x	= $el.attr("x")*1/10,
+								y	= $el.attr("y")*1/10;
+							if($el.val()*1===1){
+								$el.attr("style", C.DEADCOLOR).val(0);
+								that.cell(x, y, 0);
+							} else {
+								$el.attr("style", C.ALIVECOLOR).val(1);
+								that.cell(x, y, 1);
+							}
 						});
 						return;
 	                }
@@ -97,11 +106,12 @@ $(function() {
 	    }
 		
 		/* Nice conversion of python range fn
+		Unfortunately it will only work in JS1.7
 		
 		int low		Bottom value of range
 		int high 	Top value of range
 
-		*/
+		
 		this.range = function(low, high) {  
 		    return {
 		        __iterator__: function() {
@@ -114,6 +124,37 @@ $(function() {
 		            }
 		        }
 		    }
+		}
+		*/
+		
+		/*
+		More boring implementation :-b that works in a wider range of browsers
+		int start Beginning of range
+		int stop  (opt) End of range
+		int step  (opt) Amount to step through range
+		return array
+		*/
+		this.range = function(start, stop, step) {
+		    if (typeof stop == 'undefined') {
+		        // one param defined
+		        stop = start;
+		        start = 0;
+		    }
+
+		    if (typeof step == 'undefined') {
+		        step = 1;
+		    }
+
+		    if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
+		        return [];
+		    }
+
+		    var result = [];
+		    for (var i = start; step > 0 ? i < stop : i > stop; i += step) {
+		        result.push(i);
+		    }
+
+		    return result;
 		}
 		
 		/*
@@ -323,45 +364,65 @@ $(function() {
 		
 		/*
 		Translate our 2D array to graphics for the kids at home
+		
+		bool reset Reset the board, zero everything out and kill everything
 		*/
-		this.updateBoardDisplay = function(){
-			for (var x in that.range(0, C.XSCALE-1)){
-				for (var y in that.range(0, C.YSCALE-1)){
-					var v = C.BOARD[x][y];
-					if(v===1){
-						$(".x"+x+".y"+y).attr("style", C.ALIVECOLOR).val(1);
+		this.updateBoardDisplay = function(reset){
+			for (var x in that.range(0, C.XSCALE)){
+				for (var y in that.range(0, C.YSCALE)){
+					if(reset===true){
+						C.BOARD[x][y] = 0;
 					} else {
-						$(".x"+x+".y"+y).attr("style", C.DEADCOLOR).val(0);
+						var v = C.BOARD[x][y];
+						if(v===1){
+							$(".x"+x+".y"+y).attr("style", C.ALIVECOLOR).val(1);
+						} else {
+							$(".x"+x+".y"+y).attr("style", C.DEADCOLOR).val(0);
+						}
 					}
 				}
+			}
+			if(reset===true){
+				that.endLife(reset);
+				$("rect.rect").attr("style", C.DEADCOLOR).val(0);
 			}
 		}
 		
 		/*
 		Run the board through all its tests/axioms for the generation
+		
+		BR - I changed my nesting style here simply because it was breaking the
+		syntax highlighter on my blog and this fixed it, go figure
 		*/
-		this.testBoard = function(){
+		this.testBoard = function()
+		{
 			var xRange 			= C.XSCALE,
 				yRange 			= C.YSCALE,
-				cellIncrement 	= 0;
-				
-			for (var x=0; x<xRange; x++){
-				for (var y=0; y<yRange; y++){
-					that.testNeighbors(x,y,cellIncrement);
+				cellIncrement 	= 0,
+				aliveCells		= 0;
+
+			for (var x=0; x < xRange; x++)
+			{
+				for (var y=0; y < yRange; y++)
+				{
+					aliveCells += C.BOARD[x][y];
+					that.testNeighbors(x, y, cellIncrement);
 					cellIncrement++;
 				}
-			} 
+			}
+			if(aliveCells===0) that.endLife()
 		}
-	
+
 		this.passAGeneration = function(){
 			/*
 			Recursive fn to run the evolution of each generation
 			*/
 			if($("#stopGag").val()!=="stop"){
 				that.generation++;
+				$("#generation").text("Generation: "+that.generation);
 				that.testBoard();
-				for (var i in that.range(0, C.XSCALE-1)){
-					for (var j in that.range(0, C.YSCALE-1)){
+				for (var i in that.range(0, C.XSCALE)){
+					for (var j in that.range(0, C.YSCALE)){
 						C.BOARD[i][j] = C.TEMPBOARD[i][j];
 					}
 				}
@@ -376,9 +437,10 @@ $(function() {
 			C.gameTimer = window.setInterval(that.passAGeneration,500);
 		}
 		
-		this.endLife = function(){
+		this.endLife = function(reset){
 			window.clearInterval(C.gameTimer);
 			$("#stopGag").val("stop");
+			if(reset===true)$("#generation").text("Generation: 0");
 			console.log("Life has ended");
 		}
 		
@@ -387,10 +449,10 @@ $(function() {
 		screws up the whole game
 		*/
 		this.generateBoards = function(){
-			for (var i in that.range(0, C.XSCALE-1)){
+			for (var i in that.range(0, C.XSCALE)){
 				if(!C.BOARD[i]) C.BOARD[i] = [];
 				if(!C.TEMPBOARD[i]) C.TEMPBOARD[i] = [];
-				for (var j in that.range(0, C.YSCALE-1)){
+				for (var j in that.range(0, C.YSCALE)){
 					C.TEMPBOARD[i][j] = 0;
 					C.BOARD[i][j] = 0;
 				}
@@ -399,8 +461,8 @@ $(function() {
 		
 		//reset
 		this.clearTempBoard = function(){
-			for (var i in that.range(0, C.XSCALE-1)){
-				for (var j in that.range(0, C.YSCALE-1)){
+			for (var i in that.range(0, C.XSCALE)){
+				for (var j in that.range(0, C.YSCALE)){
 					C.TEMPBOARD[i][j] = 0;
 				}
 			}
@@ -445,6 +507,9 @@ $(function() {
 		.thumbinner {
 		    min-width: 100px;
 		}
+		#generation {
+			color:darkred;
+		}
 	</style>
 </head>
 <body>
@@ -484,8 +549,10 @@ $(function() {
 		</ol>
 	</header>
 	<div id="ct">
+		<p id="generation">Generation: 0</p>
 		<div id="life"></div>
-		<button type="button" id="beginLife" onclick="life.beginLife();" name="startBtn">Start the Game of Life</button> - <button type="button" id="endLife" onclick="life.endLife();" name="endBtn">End the Game of Life</button>
+		<button type="button" id="beginLife" onclick="life.beginLife();" name="startBtn">Start the Game of Life</button> - <button type="button" id="endLife" onclick="life.endLife();" name="endBtn">End the Game of Life</button> -
+		<button type="button" id="resetLife" onclick="life.endLife();life.updateBoardDisplay(true);" name="resetBtn">Reset</button>
 		<input type="hidden" id="stopGag" value="start" />
 	</div>
 	</div>
