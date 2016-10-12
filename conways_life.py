@@ -31,9 +31,10 @@ class Life:
 		"""
 		int scale Size of our square grid, width and height
 		"""
-		self.scale 	= scale
-		self.range	= range(scale)
-		self.board 	= [[0 for j in self.range] for i in self.range]
+		self.scale 		= scale
+		self.range		= range(scale)
+		self.board 		= [[0 for j in self.range] for i in self.range]
+		self.temp_board = [[0 for j in self.range] for i in self.range]
 		self.generation = 0
 		self.seed_the_board()
 		try:
@@ -58,13 +59,22 @@ class Life:
 					seed = 1
 				self.board[i][j] = seed
 		pass
-	
+	def clear_temp_board(self):
+		for i in range(scale):
+			for j in range(scale):
+				self.temp_board[i][j] = 0
+		pass
+		
 	def pass_a_generation(self):
 		"""
 		Self calling fn to run the evolution of each generation
 		"""
 		self.generation+=1
 		self.test_board()
+		for i in range(scale):
+			for j in range(scale):
+				self.board[i][j] = self.temp_board[i][j]
+		self.clear_temp_board()
 		time.sleep(.5)
 		self.pass_a_generation()		
 		pass
@@ -155,16 +165,19 @@ class Life:
 				cell = 1
 			else:
 				cell = 0
-			self.set_cell(i,j,cell)
+			self.set_cell(i,j,cell,True)
 		pass
 	
-	def set_cell(self,i,j,v):
+	def set_cell(self,i,j,v,temp):
 		"""
 		int i Key of first list (row #)
 		int j Key of second list (col #)
 		int v Value to set the cell on the board
 		"""
-		self.board[i][j] = v
+		if(temp==True):
+			self.temp_board[i][j] = v
+		else:
+			self.board[i][j] = v
 		pass
 		
 	def get_cell(self,i,j):
