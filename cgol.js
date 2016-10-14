@@ -429,7 +429,7 @@ $(function() {
 		this.endLife = function(reset){
 			window.clearInterval(C.gameTimer);
 			$("#stopGag").val("stop");
-			if(reset===true)$("#generation").text("0");
+			if(reset===true){ $("#generation").text("0"); that.generation = 0; }
 			console.log("Life has ended");
 		}
 		
