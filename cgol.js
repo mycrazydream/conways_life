@@ -29,23 +29,23 @@ $(function() {
 		string	div 	ID of the div container
 		*/
 		this.drawBoxes = function(xscale, yscale, div) {
-	        var gray 		= "stroke:#FFFFFF; fill: #CCC",
-				black 		= "stroke:#FFFFFF; fill: #000000",
-			    blue 		= "stroke:#FFFFFF; fill: #0000FF",
-			    green 		= "stroke:#FFFFFF; fill: #00CC00",
-			    red 		= "stroke:#FFFFFF; fill: #FF0000",
+	        var lblue 		= "stroke:#4e5d6c; fill: #5bc0de",
+				black 		= "stroke:#4e5d6c; fill: #000000",
+			    blue 		= "stroke:#4e5d6c; fill: #0000FF",
+			    green 		= "stroke:#4e5d6c; fill: #5cb85c",
+			    red 		= "stroke:#4e5d6c; fill: #FF0000",
+				white 		= "stroke:#4e5d6c; fill: #FFFFFF",
 				// total number of cells
 				n			= xscale*yscale,
 				// size of cell in pixels
 				length 		= 10,
 				// lines between the cells, for that grid look
 		        whitespace 	= 2,
-				color		= gray,
 				width		= 10,
 				height		= 10;
 				
 			C.ALIVECOLOR 	= green;
-			C.DEADCOLOR		= gray;
+			C.DEADCOLOR		= white;
 
 			/*partial boxes not applicable (yet) to CGOL
 	        if ((n % 10) != 0) {
@@ -68,7 +68,7 @@ $(function() {
 	                  attr("y", y*length).
 	                  attr("height", height).
 	                  attr("width", width).
-	                  attr("style", color).
+	                  attr("style", C.DEADCOLOR).
 					  attr("class", "rect r"+rIncrement+" x"+x+" y"+y);
 					
 					
@@ -408,7 +408,7 @@ $(function() {
 			*/
 			if($("#stopGag").val()!=="stop"){
 				that.generation++;
-				$("#generation").text("Generation: "+that.generation);
+				$("#generation").text(that.generation);
 				that.testBoard();
 				for (var i in that.range(0, C.XSCALE)){
 					for (var j in that.range(0, C.YSCALE)){
@@ -429,7 +429,7 @@ $(function() {
 		this.endLife = function(reset){
 			window.clearInterval(C.gameTimer);
 			$("#stopGag").val("stop");
-			if(reset===true)$("#generation").text("Generation: 0");
+			if(reset===true)$("#generation").text("0");
 			console.log("Life has ended");
 		}
 		
