@@ -11,6 +11,17 @@ Axiom 1. Any live cell with fewer than two live neighbours dies, as if caused by
 Axiom 2. Any live cell with two or three live neighbours lives on to the next generation.
 Axiom 3. Any live cell with more than three live neighbours dies, as if by overcrowding.
 Axiom 4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+
+TODO For all of the rules to function as intended, the game-board must be infinite. You will notice
+that as some of the animations approach the edge of the gameboard some of the Conway's axiom's break down. That is because
+I am only building 2D arrays as big as the board. I will have to find a happy medium between performance
+(infinity isn't really an option) and display on the board. Perhaps XSCALE, YSCALE + 100?
+
+Thinking about it reminds me of the problem of our observable universe which we see as so vast
+is probably tiny in comparison to how far spacetime has expanded since the big-bang. This simple little
+game is mind-blowing when you think about the implications. I recommend http://www.conwaylife.com/ if 
+you want to see just how far people have run with these four simple axioms (like reproducing the digits of pi,
+a working human cell, prime numbers, huge spaceships, etc)
 */
 
 $(function() {
